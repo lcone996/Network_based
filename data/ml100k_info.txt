@@ -1,0 +1,3 @@
+the number of users,943
+the number of items,1574
+the number of ratings,82520
