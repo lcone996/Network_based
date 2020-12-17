@@ -25,6 +25,10 @@ if __name__ == "__main__":
     final_res = mass_diffusion(train_mtx)
     rec_list = recommend(final_res, 50)
 
-    from Evaluation import precision
+    from Evaluation import *
 
     p = precision(probe_set, rec_list)
+    r = recall(probe_set, rec_list, train_mtx.shape[1])
+    f1 = harmonic_mean(probe_set, rec_list, train_mtx.shape[1])
+    h = hamming_distance(rec_list)
+    a = average_degree(train_mtx.sum(0), rec_list)

@@ -18,6 +18,22 @@ if __name__ == "__main__":
     final_res = eliminate_redundancy(train_mtx, -0.75)
     rec_list = recommend(final_res, 50)
 
-    from Evaluation import precision
+    from Evaluation import *
 
     p = precision(probe_set, rec_list)
+    r = recall(probe_set, rec_list, train_mtx.shape[1])
+    f1 = harmonic_mean(probe_set, rec_list, train_mtx.shape[1])
+
+    # a_set = np.linspace(-1.5, 0.5, 101)
+    # er_p = [precision(probe_set, recommend(eliminate_redundancy(train_mtx, a), 50)) for a in a_set]
+    #
+    # max_p = max(er_p)
+    # alpha_opt = a_set[er_p.index(max_p)]
+    # import matplotlib.pyplot as plt
+    # plt.figure()
+    # plt.title("ER")
+    # plt.xlabel("alpha")
+    # plt.ylabel("precision")
+    # plt.plot(a_set, er_p, marker="o", c="skyblue")
+    # plt.text(alpha_opt+0.2, max_p, "opt=%.2f precision=%.4f" % (alpha_opt, max_p))
+    # plt.show()
