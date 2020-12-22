@@ -8,7 +8,7 @@ from ElimRedu import eliminate_redundancy
 from explor import dichotomy
 
 
-def precision_analysis(rec_list1, rec_list2, train_matrix, probe_set, *image_title):
+def precision_analysis(rec_list1, rec_list2, train_matrix, probe_set):
     list_length = len(rec_list1[0])
     user_amount = train_matrix.shape[0]
     user_degree = train_matrix.sum(1)
@@ -25,6 +25,11 @@ def precision_analysis(rec_list1, rec_list2, train_matrix, probe_set, *image_tit
     err_df["user_degree"] = user_degree
     err_df["error"] = precision2 - precision1
     err_df["count"] = np.ones(user_amount)
+
+    return err_df
+
+
+def precision_error_plot(err_df, *image_title):
     group = err_df.groupby(["user_degree", "error"]).count()
 
     count_df = pd.DataFrame()
@@ -44,6 +49,7 @@ def precision_analysis(rec_list1, rec_list2, train_matrix, probe_set, *image_tit
     s2 = plt.scatter(neg_sample["degree"], neg_sample["error"], c="r", marker="v", s=neg_sample["count"] * 3 + 7)
     s3 = plt.scatter(not_sample["degree"], not_sample["error"], c="skyblue", marker="o",
                      s=not_sample["count"] * 3 + 7)
+    user_amount = count_df["count"].sum()
     fra1 = "%.1f%%" % (pos_sample["count"].sum() / user_amount * 100)
     fra2 = "%.1f%%" % (neg_sample["count"].sum() / user_amount * 100)
     fra3 = "%.1f%%" % (not_sample["count"].sum() / user_amount * 100)
@@ -53,14 +59,25 @@ def precision_analysis(rec_list1, rec_list2, train_matrix, probe_set, *image_tit
     plt.text(400, -0.05, fra2)
     plt.show()
 
+    return
+
 
 if __name__ == "__main__":
     rating_file = sys.path[-1] + "/data/ml100k_data.csv"
     train_mtx, probe = loading(rating_file, 0.9)
 
     rec1 = recommend(mass_diffusion(train_mtx), 50)
-    rec2 = recommend(eliminate_redundancy(train_mtx, -0.75), 50)
-    rec3 = recommend(dichotomy(train_mtx, alpha=-0.9, beta=-0.87), 50)
+    rec2 = recommend(eliminate_redundancy(train_mtx, -0.88), 50)
+    # rec3 = recommend(dichotomy(train_mtx, alpha=-0.9, beta=-0.87), 50)
 
-    precision_analysis(rec1, rec2, train_mtx, probe, "MD & ER")
-    precision_analysis(rec1, rec3, train_mtx, probe, "MD & ER-2")
+    precision_error_plot(precision_analysis(rec1, rec2, train_mtx, probe), "MD & ER")
+    # precision_analysis(rec1, rec3, train_mtx, probe, "MD & ER-2")
+
+    # 推荐结果变差的用户不是固定的
+    err = []
+    for i in range(10):
+        train_mtx, probe = loading(rating_file, 0.9)
+        rec1 = recommend(mass_diffusion(train_mtx), 50)
+        rec2 = recommend(eliminate_redundancy(train_mtx, -0.88), 50)
+        err_df = precision_analysis(rec1, rec2, train_mtx, probe)
+        err.append(list(err_df[err_df["error"] < 0]["user_degree"]))

@@ -43,3 +43,14 @@ def average_degree(item_degree, recommend_list):
     for rec in recommend_list:
         d += sum(item_degree[rec])
     return round(d / len(recommend_list) / len(recommend_list[0]))
+
+
+def all_measure(rec_list, probe_set, train_mtx):
+    p = precision(probe_set, rec_list)
+    # r = recall(probe_set, rec_list, train_mtx.shape[1])
+    # f1 = harmonic_mean(probe_set, rec_list, train_mtx.shape[1])
+    h = hamming_distance(rec_list)
+    a = average_degree(train_mtx.sum(0), rec_list)
+    print("precision = %.4f" % p)
+    print("hamming = %.4f" % h)
+    print("novelty = %d" % a)

@@ -26,7 +26,6 @@ if __name__ == "__main__":
     rec_list = recommend(final_res, 50)
 
     from Evaluation import *
-
     p = precision(probe_set, rec_list)
     r = recall(probe_set, rec_list, train_mtx.shape[1])
     f1 = harmonic_mean(probe_set, rec_list, train_mtx.shape[1])
